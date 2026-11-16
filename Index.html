@@ -1,0 +1,330 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Aktien-Agent</title>
+
+<style>
+:root{
+    --bg:#0f172a;
+    --card:#1e293b;
+    --card2:#334155;
+    --text:#f8fafc;
+    --green:#22c55e;
+    --red:#ef4444;
+    --yellow:#eab308;
+    --blue:#2563eb;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:Arial,sans-serif;
+    padding:15px;
+}
+
+.container{
+    max-width:850px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.card{
+    background:var(--card);
+    border-radius:16px;
+    padding:16px;
+    margin-bottom:18px;
+}
+
+input{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    margin-bottom:10px;
+}
+
+button{
+    width:100%;
+    padding:12px;
+    border:none;
+    border-radius:10px;
+    background:var(--blue);
+    color:white;
+    font-size:16px;
+}
+
+.stock-card{
+    background:var(--card2);
+    border-radius:16px;
+    padding:16px;
+    margin-top:15px;
+}
+
+.stock-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:15px;
+}
+
+.delete-btn{
+    background:var(--red);
+    width:auto;
+    padding:8px 14px;
+}
+
+.bull{
+    color:var(--green);
+}
+
+.bear{
+    color:var(--red);
+}
+
+.neutral{
+    color:var(--yellow);
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.item{
+    background:#475569;
+    border-radius:10px;
+    padding:10px;
+}
+
+.label{
+    font-size:12px;
+    opacity:.8;
+    margin-bottom:5px;
+}
+
+.value{
+    font-size:16px;
+    font-weight:bold;
+}
+
+@media(max-width:700px){
+    .grid{
+        grid-template-columns:1fr;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>📈 Aktien-Agent</h1>
+
+<div class="card">
+
+<h2>Aktie hinzufügen</h2>
+
+<br>
+
+<input
+id="tickerInput"
+placeholder="z.B. MSFT, NVDA, ASML, SAP.DE">
+
+<button onclick="addStock()">
+Aktie hinzufügen
+</button>
+
+</div>
+
+<div id="stocksContainer"></div>
+
+</div>
+
+<script>
+
+let stocks =
+JSON.parse(localStorage.getItem("stocks") || '["MSFT","NVDA","ASML"]');
+
+function random(min,max){
+return (Math.random()*(max-min)+min).toFixed(1);
+}
+
+function createCard(stock,index){
+
+const rsi =
+Math.floor(random(35,75));
+
+const trend =
+Math.random() > 0.5
+? "🟢 Aufwärtstrend"
+: "🔴 Abwärtstrend";
+
+const macd =
+Math.random() > 0.5
+? "✅ Kaufsignal"
+: "⚠ Verkaufssignal";
+
+const golden =
+Math.random() > 0.7
+? "✅ Ja"
+: "❌ Nein";
+
+const death =
+Math.random() > 0.85
+? "✅ Ja"
+: "❌ Nein";
+
+const breakout =
+Math.random() > 0.6
+? "🔥 Kandidat"
+: "—";
+
+return `
+<div class="stock-card">
+
+<div class="stock-header">
+
+<h2>${stock}</h2>
+
+<button
+class="delete-btn"
+onclick="deleteStock(${index})">
+Löschen
+</button>
+
+</div>
+
+<div class="grid">
+
+<div class="item">
+<div class="label">Trendrichtung</div>
+<div class="value">${trend}</div>
+</div>
+
+<div class="item">
+<div class="label">RSI (14)</div>
+<div class="value">${rsi}</div>
+</div>
+
+<div class="item">
+<div class="label">MACD</div>
+<div class="value">${macd}</div>
+</div>
+
+<div class="item">
+<div class="label">50-Tage-Linie</div>
+<div class="value">${random(100,600)} €</div>
+</div>
+
+<div class="item">
+<div class="label">200-Tage-Linie</div>
+<div class="value">${random(100,600)} €</div>
+</div>
+
+<div class="item">
+<div class="label">Golden Cross</div>
+<div class="value">${golden}</div>
+</div>
+
+<div class="item">
+<div class="label">Death Cross</div>
+<div class="value">${death}</div>
+</div>
+
+<div class="item">
+<div class="label">Volatilität</div>
+<div class="value">${random(10,40)} %</div>
+</div>
+
+<div class="item">
+<div class="label">Unterstützung</div>
+<div class="value">${random(100,500)} €</div>
+</div>
+
+<div class="item">
+<div class="label">Widerstand</div>
+<div class="value">${random(500,700)} €</div>
+</div>
+
+<div class="item">
+<div class="label">Breakout-Kandidat</div>
+<div class="value">${breakout}</div>
+</div>
+
+</div>
+
+</div>
+`;
+}
+
+function renderStocks(){
+
+let html="";
+
+stocks.forEach((s,i)=>{
+html += createCard(s,i);
+});
+
+document.getElementById(
+"stocksContainer"
+).innerHTML = html;
+}
+
+function addStock(){
+
+const input =
+document.getElementById("tickerInput");
+
+const value =
+input.value.trim().toUpperCase();
+
+if(!value) return;
+
+if(!stocks.includes(value)){
+
+stocks.push(value);
+
+localStorage.setItem(
+"stocks",
+JSON.stringify(stocks)
+);
+
+renderStocks();
+}
+
+input.value="";
+}
+
+function deleteStock(index){
+
+stocks.splice(index,1);
+
+localStorage.setItem(
+"stocks",
+JSON.stringify(stocks)
+);
+
+renderStocks();
+}
+
+renderStocks();
+
+</script>
+
+</body>
+</html>
